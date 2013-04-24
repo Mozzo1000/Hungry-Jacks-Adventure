@@ -2,6 +2,8 @@
 	
 	import flash.display.MovieClip;
 	import flash.events.Event;
+	import flash.utils.Timer;
+	import flash.events.TimerEvent;
 	import flash.events.ProgressEvent;
 	import flash.net.URLRequest;
 	import flash.net.navigateToURL;
@@ -17,7 +19,10 @@
 		public var gameOverScreen:GameOverScreen;
 		public var winScreen:WinScreen;
 		public var menuScreen:MenuScreen;
+		public var splashScreen:SplashScreen;
 		public var loadingProgress:LoadingProgress;
+		
+		private var timer:Timer = new Timer(3000);
 		
 		var urlWebsite:URLRequest = new URLRequest("http://www.mozzo.host56.com");
 		var urlTwitter:URLRequest = new URLRequest("http://www.twitter.com/Mozzo__");
@@ -37,12 +42,31 @@
 		
 		public function onCompleteDownload(event:Event):void{
 			gotoAndStop(3);
-			showMenu();
+			
+			timer.addEventListener(TimerEvent.TIMER, splashScreenEnd);
+			timer.start();
+			
+			showSplashScreen();
+			//showMenu();
 		}
 		
 		public function onProgressMade(progressEvent:ProgressEvent):void{
 			//trace( Math.floor( 100 * loaderInfo.bytesLoaded / loaderInfo.bytesTotal ) );
 			loadingProgress.setValue(Math.floor(100*loaderInfo.bytesLoaded / loaderInfo.bytesTotal));
+		}
+		
+		public function splashScreenEnd(event:TimerEvent):void{
+			timer.removeEventListener(TimerEvent.TIMER, splashScreenEnd);
+			timer.stop();
+			splashScreen = null;
+			showMenu();
+		}
+		
+		public function showSplashScreen():void{
+			splashScreen = new SplashScreen();
+			splashScreen.x = 0;
+			splashScreen.y = 0;
+			addChild(splashScreen);
 		}
 		
 		public function showMenu():void{
